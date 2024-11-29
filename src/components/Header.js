@@ -1,9 +1,13 @@
 import React, { useState, useRef, useEffect } from "react";
 import useClickOutside from "../hooks/useClickOutside";
-import CustomButton from "./Button";
 import "../styles/globals.css";
 import { useRouter } from "next/router";
-import { DarkThemeIcon, LightThemeIcon, logOutIcon } from "../utils/icons";
+import {
+  DarkThemeIcon,
+  LightThemeIcon,
+  logOutIcon,
+  ChangePasswordIcon,
+} from "../utils/icons";
 import { useTheme } from "../utils/themeContext";
 import { useUser } from "../app/context/userContext";
 
@@ -15,8 +19,10 @@ const Header = () => {
   const avatarRef = useRef(null);
   const [menuPosition, setMenuPosition] = useState({ left: 0, top: 0 });
   const [activeUpload, setActiveUpload] = useState("single");
+  const [isHovered, setIsHovered] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const router = useRouter();
+  const body = document.body;
   const handleProfileClick = () => {
     const avatarRect = avatarRef.current.getBoundingClientRect();
     setMenuPosition({
@@ -43,8 +49,13 @@ const Header = () => {
   const handleLogout = () => {
     localStorage.removeItem("token");
     clearUser();
-    router.push("auth/login");
+    router.push("/auth/login");
     setIsMenuOpen(false);
+  };
+
+  const toggleTooltip = (state) => {
+    console.log("state: ", state);
+    setIsHovered(state);
   };
 
   return (
@@ -93,9 +104,19 @@ const Header = () => {
           </span>
         </div>
       </div>
-      <button className="pr-2" onClick={toggleTheme}>
-        {theme === "light" ? <DarkThemeIcon /> : <LightThemeIcon />}
-      </button>
+      <div    
+          className="p-3 d-flex items-center cursor-pointer relative"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}>
+        <button onClick={toggleTheme}>
+          {theme === "light" ? <DarkThemeIcon /> : <LightThemeIcon />}
+        </button>
+        {isHovered && (
+            <div className="tooltip absolute top-2 right-full w-80 p-2 bg-gray-200 text-black rounded shadow-lg z-50">
+              Change to {theme === "light" ? "dark" : "light"} Mode
+            </div>
+        )}
+      </div>
       <div className="sidebar-bottom d-flex items-center justify-content-center">
         <div
           className="flex items-center justify-center bg-blue-500 text-white rounded-full w-10 h-10 cursor-pointer mx-2 md:mx-4"
@@ -117,14 +138,28 @@ const Header = () => {
           ref={menuRef}
           style={{ position: "fixed", top: menuPosition.top, right: "5px" }}
         >
-          <CustomButton
-            type="red"
-            onClick={handleLogout}
-            className="sidebar-logout-button"
+          <div
+            className="flex items-center cursor-pointer gap-4 m-2 p-1"
+            onClick={() => router.push("/auth/change-password")}
           >
-            {logOutIcon()}
-            <span className="pl-1">Logout</span>
-          </CustomButton>
+            <span>
+              {ChangePasswordIcon(
+                body.getAttribute("data-theme") === "dark" ? "#fff" : "#000"
+              )}
+            </span>
+            <span>Change Password</span>
+          </div>
+          <div
+            className="flex items-center cursor-pointer gap-4 m-2 p-1"
+            onClick={handleLogout}
+          >
+            <span>
+              {logOutIcon(
+                body.getAttribute("data-theme") === "dark" ? "#fff" : "#000"
+              )}
+            </span>
+            <span>Logout</span>
+          </div>
         </div>
       )}
     </header>
