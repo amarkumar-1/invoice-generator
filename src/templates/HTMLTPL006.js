@@ -638,7 +638,7 @@ export default function generateHTMLTPL006(invoiceData) {
             invoiceData.itemData["taxPercentage"] > 0 &&
             !invoiceData.itemData["discount"] > 0
               ? `<td class="align-right table-data-limit">
-              <div">${currencySymbol}
+              <div>${currencySymbol}
               ${item["taxAmount"]}</div>
             </td>`
               : ""
@@ -696,7 +696,7 @@ export default function generateHTMLTPL006(invoiceData) {
               </p>`
                     : `
               <p class="details-data">CGST</p>
-              <p class="details-data data-limit ">
+              <p class="details-data data-limit">
                 ${currencySymbol}
                 ${invoiceData.itemData["taxAmount"] / 2}
               </p>
